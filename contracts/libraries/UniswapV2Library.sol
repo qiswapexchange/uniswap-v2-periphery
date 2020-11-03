@@ -1,6 +1,7 @@
 pragma solidity >=0.5.0;
 
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
 
 import "./SafeMath.sol";
 
@@ -14,21 +15,37 @@ library UniswapV2Library {
         require(token0 != address(0), 'UniswapV2Library: ZERO_ADDRESS');
     }
 
+    // function pairFor(address factory, address tokenA, address tokenB) internal view returns (address pair) {
+    //     (address token0, address token1) = sortTokens(tokenA, tokenB);
+
+    //     // equivalent to calling getPair
+    //     pair = IUniswapV2Factory(factory).getPair(token0, token1);
+    // }
+
     // calculates the CREATE2 address for a pair without making any external calls
     function pairFor(address factory, address tokenA, address tokenB) internal pure returns (address pair) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
+
+        // equivalent to calling getPair
+        // pair = IUniswapV2Factory(factory).getPair(token0, token1);
+
         pair = address(uint(keccak256(abi.encodePacked(
                 hex'ff',
                 factory,
                 keccak256(abi.encodePacked(token0, token1)),
-                hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash
+                // call pairBytecodeHash on UniswapV2Factory to get the latest hash
+                hex'f273ad12322fcfe8affa9c021cae2095c221d77041da9cc48d54bf669ffa63bb' // init code hash
             ))));
     }
 
     // fetches and sorts the reserves for a pair
     function getReserves(address factory, address tokenA, address tokenB) internal view returns (uint reserveA, uint reserveB) {
         (address token0,) = sortTokens(tokenA, tokenB);
+
         (uint reserve0, uint reserve1,) = IUniswapV2Pair(pairFor(factory, tokenA, tokenB)).getReserves();
+        // address pair = IUniswapV2Factory(factory).getPair(tokenA, tokenB);
+        // (uint reserve0, uint reserve1,) = IUniswapV2Pair(pair).getReserves();
+
         (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
     }
 

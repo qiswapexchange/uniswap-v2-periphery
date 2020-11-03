@@ -400,6 +400,19 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     }
 
     // **** LIBRARY FUNCTIONS ****
+
+    // function pairFor2(address factory, address tokenA, address tokenB) public view returns (address) {
+    //     return UniswapV2Library.pairFor2(factory, tokenA, tokenB);
+    // }
+
+    function pairFor(address factory, address tokenA, address tokenB) public pure returns (address) {
+        return UniswapV2Library.pairFor(factory, tokenA, tokenB);
+    }
+
+    function getReserves(address factory, address tokenA, address tokenB) public view returns (uint reserveA, uint reserveB) {
+        return UniswapV2Library.getReserves(factory, tokenA, tokenB);
+    }
+
     function quote(uint amountA, uint reserveA, uint reserveB) public pure virtual override returns (uint amountB) {
         return UniswapV2Library.quote(amountA, reserveA, reserveB);
     }
